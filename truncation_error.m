@@ -1,6 +1,20 @@
 function truncation_error()
-    forward_euler_local_error(2, 0.001)
-    explicit_midpoint_local_error(2, 0.001)
+    % forward_euler_local_error(2, 0.001)
+    % explicit_midpoint_local_error(2, 0.001)
+    h = logspace(-5, 1, 100);
+    euler_local_error = zeros(100);
+    midpoint_local_error = zeros(100);
+
+    for i = 1:100
+        euler_local_error(i) = forward_euler_local_error(2, h(i));
+        midpoint_local_error(i) = explicit_midpoint_local_error(2, h(i));
+    end
+
+    % plot local truncation error...WTF is varargin
+    % loglog_fit(x_regression,y_regression,varargin)
+
+    global_error = forward_euler_global_error([0, 1], 0.01)
+    global_error = explicit_midpoint_global_error([0, 1], 0.01)
 end
 
 function local_error = forward_euler_local_error(t, h)
@@ -15,6 +29,20 @@ function local_error = explicit_midpoint_local_error(t, h)
     X_t = solution01(t+h);
 
     local_error = norm(G_t - X_t);
+end
+
+function global_error = forward_euler_global_error(tspan, h_ref)
+    [t_list,X_f,~, num_evals] = forward_euler(@rate_func01,tspan,solution01(tspan(1)),h_ref);
+    X_tf = solution01(t_list)';
+
+    global_error = norm(X_f - X_tf);
+end
+
+function global_error = explicit_midpoint_global_error(tspan, h_ref)
+    [t_list,X_f,~, num_evals] = explicit_midpoint(@rate_func01,tspan,solution01(tspan(1)),h_ref);
+    X_tf = solution01(t_list)';
+
+    global_error = norm(X_f - X_tf);
 end
 
 % explicit midpoint________________________________________________________
