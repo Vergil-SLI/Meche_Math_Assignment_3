@@ -3,6 +3,7 @@ function [t_list,X_list,h_avg, num_evals] = forward_euler(rate_func_in,tspan,X0,
     h_avg = (tspan(2) - tspan(1)) / num_of_steps;
     t_list = linspace(tspan(1), tspan(2), num_of_steps+1)';
     X_list = zeros(length(X0),length(t_list));
+    X_list(:,1) = X0;
     num_evals = 0;
 
     for i = 2:length(t_list)
@@ -13,12 +14,11 @@ function [t_list,X_list,h_avg, num_evals] = forward_euler(rate_func_in,tspan,X0,
 
 end
 
-function forward_euler_test()
-
-    [t_list,X_list,h_avg, num_evals] = forward_euler_test(@rate_func01, [0, pi/4], 1, 0.01);
-    X_list = X_list;
-    X = solution01(t_list);
-end
+% function forward_euler_test()
+%     [t_list,X_list,h_avg, num_evals] = forward_euler_test(@rate_func01, [0, pi/4], 1, 0.01);
+%     X_list = X_list;
+%     X = solution01(t_list);
+% end
 
 function [XB,num_evals] = forward_euler_step(rate_func_in,t,XA,h)
     % computing for value of x when t increases by h
