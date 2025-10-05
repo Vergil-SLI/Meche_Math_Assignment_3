@@ -14,12 +14,6 @@ function [t_list,X_list,h_avg, num_evals] = forward_euler(rate_func_in,tspan,X0,
 
 end
 
-% function forward_euler_test()
-%     [t_list,X_list,h_avg, num_evals] = forward_euler_test(@rate_func01, [0, pi/4], 1, 0.01);
-%     X_list = X_list;
-%     X = solution01(t_list);
-% end
-
 function [XB,num_evals] = forward_euler_step(rate_func_in,t,XA,h)
     % computing for value of x when t increases by h
     XB = XA + h*rate_func_in(t, XA);
