@@ -1,37 +1,78 @@
 function truncation_error()
-    % forward_euler_local_error(2, 0.001)
-    % explicit_midpoint_local_error(2, 0.001)
-    h = logspace(-5, 1, 100);
-    euler_local_error = zeros(100);
-    midpoint_local_error = zeros(100);
+    clear;
+    % % plots comparing closed form approximation (of various time step) with numerical solutions
+    % % forward euler method
+    h = logspace(0.01, 0.1, 5)
+    t_start = 0;
+    t_end = pi;
 
-    for i = 1:100
-        euler_local_error(i) = forward_euler_local_error(2, h(i));
-        midpoint_local_error(i) = explicit_midpoint_local_error(2, h(i));
+    [t_list, euler_X_list, h_avg, ~] = forward_euler(@rate_func01,[t_start, t_end],solution01(t_start), h(1));
+    
+    axis equal
+    hold off
+    numerical_X_list = solution01(t_list);
+    plot(t_list, numerical_X_list, 'black', LineWidth=2)
+
+    hold on
+    for i = 1:length(h)
+        [t_list, euler_X_list, h_avg, ~] = forward_euler(@rate_func01,[0, pi],solution01(t_start), h(i));
+        
+        plot(t_list, euler_X_list, "o-", LineWidth=2)
     end
+    
+    legend()
+    
 
-    % plot local truncation error...WTF is varargin
-    % loglog_fit(x_regression,y_regression,varargin)
+    % plot comparing the 4 different approximation methods when given the same time step
+    
 
-    global_error = forward_euler_global_error([0, 1], 0.01)
-    global_error = explicit_midpoint_global_error([0, 1], 0.01)
+
+    % h = logspace(-5, 1, 100);
+    % euler_local_error = zeros(1, length(h));
+    % midpoint_local_error = zeros(1, length(h));
+    % 
+    % for i = 1:length(h)
+    %     euler_local_error(i) = forward_euler_local_error(pi/2, h(1,i));
+    %     midpoint_local_error(i) = explicit_midpoint_local_error(pi/2, h(1,i));
+    % end
+    % 
+    % % plot local truncation error
+    % axis equal
+    % hold off
+    % loglog(h,euler_local_error, 'b-')
+    % hold on
+    % loglog(h,midpoint_local_error, 'g-')
+    % legend("euler forward local error", "explicit midpoint local error")
+
+    % 
+    % loglog_fit(h,euler_local_error)
+    % loglog_fit(h,midpoint_local_error)
+    % 
+    % % global_error = forward_euler_global_error([0, 1], 0.01);
+    % % global_error = explicit_midpoint_global_error([0, 1], 0.01);
 end
 
+
 function local_error = forward_euler_local_error(t, h)
-    G_t = forward_euler_step(@rate_func01,t,solution01(t),h);
+    % calculate local error for the first test function
+    [~,X_list,~, ~] = forward_euler(@rate_func01,[t, t+h],solution01(t),h+1);
+    G_t = X_list(end);
     X_t = solution01(t+h);
 
     local_error = norm(G_t - X_t);
 end
 
 function local_error = explicit_midpoint_local_error(t, h)
-    G_t = explicit_midpoint_step(@rate_func01,t,solution01(t),h);
+    % calculate local error for the first test function
+    [~,X_list,~, ~] = explicit_midpoint(@rate_func01,[t, t+h],solution01(t),h+1);
+    G_t = X_list(end);
     X_t = solution01(t+h);
 
     local_error = norm(G_t - X_t);
 end
 
 function global_error = forward_euler_global_error(tspan, h_ref)
+    % calculate global error for the first test function
     [t_list,X_f,~, num_evals] = forward_euler(@rate_func01,tspan,solution01(tspan(1)),h_ref);
     X_tf = solution01(t_list)';
 
@@ -39,61 +80,11 @@ function global_error = forward_euler_global_error(tspan, h_ref)
 end
 
 function global_error = explicit_midpoint_global_error(tspan, h_ref)
+    % calculate global error for the first test function
     [t_list,X_f,~, num_evals] = explicit_midpoint(@rate_func01,tspan,solution01(tspan(1)),h_ref);
     X_tf = solution01(t_list)';
 
     global_error = norm(X_f - X_tf);
-end
-
-% explicit midpoint________________________________________________________
-function [t_list,X_list,h_avg, num_evals] = explicit_midpoint(rate_func_in,tspan,X0,h_ref)
-    num_of_steps = ceil((tspan(2) - tspan(1)) / h_ref);
-    h_avg = (tspan(2) - tspan(1)) / num_of_steps;
-    t_list = linspace(tspan(1), tspan(2), num_of_steps+1)';
-    X_list = zeros(length(X0),length(t_list));
-    X_list(:,1) = X0;
-    num_evals = 0;
-
-    for i = 2:length(t_list)
-        [XB_temp,num_eval_temp] = explicit_midpoint_step(rate_func_in, t_list(i-1), X_list(i-1), h_avg);
-        X_list(:,i) = XB_temp;
-        num_evals = num_evals + num_eval_temp;
-    end
-end
-
-%This function computes the value of X at the next time step
-%using the explicit midpoint approximation
-function [XB,num_evals] = explicit_midpoint_step(rate_func_in,t,XA,h)
-    XB_half = XA + (h/2) * rate_func_in(t, XA);
-    XB = XB_half + (h/2) * rate_func_in(t+(h/2), XB_half);
-    
-    num_evals = 2;
-end
-
-
-% forward_euler____________________________________________________________
-function [t_list,X_list,h_avg, num_evals] = forward_euler(rate_func_in,tspan,X0,h_ref)
-    num_of_steps = ceil((tspan(2) - tspan(1)) / h_ref);
-    h_avg = (tspan(2) - tspan(1)) / num_of_steps;
-    t_list = linspace(tspan(1), tspan(2), num_of_steps+1)';
-    X_list = zeros(length(X0),length(t_list));
-    X_list(:,1) = X0;
-    num_evals = 0;
-
-    for i = 2:length(t_list)
-        [XB_temp,num_eval_temp] = forward_euler_step(rate_func_in, t_list(i-1), X_list(i-1), h_avg);
-        X_list(:,i) = XB_temp;
-        num_evals = num_evals + num_eval_temp;
-    end
-
-end
-
-function [XB,num_evals] = forward_euler_step(rate_func_in,t,XA,h)
-    % computing for value of x when t increases by h
-    XB = XA + h*rate_func_in(t, XA);
-
-    % account for how many times we called rate_func_in
-    num_evals = 1;
 end
 
 
