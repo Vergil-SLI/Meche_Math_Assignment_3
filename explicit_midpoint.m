@@ -23,7 +23,7 @@ end
 %using the explicit midpoint approximation
 function [XB,num_evals] = explicit_midpoint_step(rate_func_in,t,XA,h)
     XB_half = XA + (h/2) * rate_func_in(t, XA);
-    XB = XB_half + (h/2) * rate_func_in(t+(h/2), XB_half);
+    XB = XA +  h* rate_func_in(t+(h/2), XB_half);
     
     num_evals = 2;
 end
