@@ -1,4 +1,4 @@
-function [xi, exit_flag] = multi_newton(fun,x_guess,solver_params)
+function [xi, exit_flag, num_evals] = multi_newton(fun,x_guess,solver_params)
     %unpack values from struct (if fields in struct have been set)
     dxtol = 1e-14; %terminate early if |x_{i+1}-x_{i}|<dxtol
     if isfield(solver_params,'dxtol')
@@ -34,6 +34,8 @@ function [xi, exit_flag] = multi_newton(fun,x_guess,solver_params)
         J = approximate_jacobian_for_newton(fun, xi);
     end
     
+    num_evals = 1;
+
     delta_x = -J\fx;
     
     % keep finding "next point" until either change too small, too many iter, or find the root
@@ -49,6 +51,7 @@ function [xi, exit_flag] = multi_newton(fun,x_guess,solver_params)
         
         delta_x = -J\fx;
         iter = iter + 1;
+        num_evals = num_evals + 1;
     end
     
     distance_from_zero = norm(fx);
