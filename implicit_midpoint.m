@@ -7,7 +7,7 @@ function [t_list,X_list,h_avg, num_evals] = implicit_midpoint(rate_func_in,tspan
     num_evals = 0;
 
     for i = 2:length(t_list)
-        [XB_temp,num_eval_temp] = implicit_midpoint_step(rate_func_in, t_list(i-1), X_list(i-1), h_avg);
+        [XB_temp,num_eval_temp] = implicit_midpoint_step(rate_func_in, t_list(i-1), X_list(:, i-1), h_avg);
         X_list(:,i) = XB_temp;
         num_evals = num_evals + num_eval_temp;
     end

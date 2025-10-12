@@ -40,6 +40,7 @@ function [xi, exit_flag, num_evals] = multi_newton(fun,x_guess,solver_params)
     
     % keep finding "next point" until either change too small, too many iter, or find the root
     while iter < max_iter && norm(delta_x) >= dxtol && norm(fx) >= ftol && norm(delta_x) <= dxmax
+
         xi = xi + delta_x;
         
         if numerical_diff ~= 1

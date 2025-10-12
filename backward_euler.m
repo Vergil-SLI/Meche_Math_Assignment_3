@@ -2,12 +2,12 @@ function [t_list,X_list,h_avg, num_evals] = backward_euler(rate_func_in,tspan,X0
     num_of_steps = ceil((tspan(2) - tspan(1)) / h_ref);
     h_avg = (tspan(2) - tspan(1)) / num_of_steps;
     t_list = linspace(tspan(1), tspan(2), num_of_steps+1)';
-    X_list = zeros(length(X0),length(t_list));
+    X_list = [];
     X_list(:,1) = X0;
     num_evals = 0;
 
     for i = 2:length(t_list)
-        [XB_temp,num_eval_temp] = backward_euler_step(rate_func_in, t_list(i-1), X_list(i-1), h_avg);
+        [XB_temp,num_eval_temp] = backward_euler_step(rate_func_in, t_list(i-1), X_list(:, i-1), h_avg);
         X_list(:,i) = XB_temp;
         num_evals = num_evals + num_eval_temp;
     end

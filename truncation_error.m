@@ -548,7 +548,7 @@ end
 
 % test func 2
 function dXdt = rate_func02(t,X)
-    dXdt = [0,-1;1,0]*X;
+    dXdt = [-1*X(2); X(1)];
 end
 
 function X = solution02(t)
