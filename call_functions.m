@@ -8,4 +8,4 @@
 % 7 = loglog plot of local truncation error of all methods
 % 8 = loglog plot of global truncation error of explicit methods
 % 9 = loglog plot of global truncation error of all methods
-truncation_error(5)
+truncation_error(7)

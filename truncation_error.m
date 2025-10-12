@@ -193,15 +193,16 @@ function truncation_error(mode)
         analytical_difference = zeros(1, length(h));
         exp_euler_local_error = zeros(1, length(h));
         exp_midpoint_local_error = zeros(1, length(h));
-        implicit_euler_local_error = zeros(1, length(h));
+        imp_euler_local_error = zeros(1, length(h));
         imp_midpoint_local_error = zeros(1, length(h));
         h_avg = zeros(1, length(h));
 
-        for i = 1:length(h)
-            analytical_difference(i) = abs(solution01(t0+h(1,i))-solution01(t0));
+        for i = 2:length(h)
+            analytical_difference(i) = abs(solution01(t0+h(1,i))-solution01(t0+h(1,i-1)));
             [exp_euler_local_error(i), ~, ~] = forward_euler_local_error(t0, h(1,i));
             [exp_midpoint_local_error(i), h_avg_temp, ~] = explicit_midpoint_local_error(t0, h(1,i));
-            [implicit_euler_local_error(i), ~, ~] = backward_euler_local_error(t0, h(1,i));
+            [imp_euler_local_error(i), ~, ~] = backward_euler_local_error(t0, h(1,i));
+            [imp_midpoint_local_error(i), ~, ~] = implicit_midpoint_local_error(t0, h(1,i));
 
 
             h_avg(1, i) = h_avg_temp;
@@ -210,19 +211,25 @@ function truncation_error(mode)
         [p1,k1] = loglog_fit(h,analytical_difference);
         [p2,k2] = loglog_fit(h_avg,exp_euler_local_error);
         [p3,k3] = loglog_fit(h_avg,exp_midpoint_local_error);
+        [p4,k4] = loglog_fit(h_avg,imp_euler_local_error);
+        [p5,k5] = loglog_fit(h_avg,imp_midpoint_local_error);
 
         % plot the local truncation error
         hold off
         loglog(h,analytical_difference, 'b.', MarkerSize=10)
         hold on
-        loglog(h_avg,imp_euler_local_error, 'r.', MarkerSize=10)
+        loglog(h_avg,exp_euler_local_error, 'r.', MarkerSize=10)
         loglog(h_avg,exp_midpoint_local_error, 'g.', MarkerSize=10)
+        loglog(h_avg,imp_euler_local_error, 'c.', MarkerSize=10)
+        loglog(h_avg,imp_midpoint_local_error, 'm.', MarkerSize=10)
         loglog(h, k1*(h.^p1), 'b-')
         loglog(h_avg, k2*(h_avg.^p2), 'r-')
         loglog(h_avg, k3*(h_avg.^p3), 'g-')
+        loglog(h_avg, k4*(h_avg.^p4), 'c-')
+        loglog(h_avg, k5*(h_avg.^p5), 'm-')
         xlabel("Average timestep length h")
         ylabel("Error")
-        lgd = legend("analytical difference","forward euler local error", "explicit midpoint local error",...
+        lgd = legend("analytical difference","forward euler local error", "explicit midpoint local error", "backward euler local error", "implicit midpoint local error" , ...
             "k = " + k1 + ", p = " + p1,...
             "k = " + k2 + ", p = " + p2,...
             "k = " + k3 + ", p = " + p3);
