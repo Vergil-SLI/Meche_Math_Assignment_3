@@ -315,6 +315,86 @@ function truncation_error(mode)
         lgd = legend("forward euler global error", "explicit midpoint global error", "backward euler global error", "implicit midpoint global error");
         lgd.Location = "southeast";
     end
+
+    % error scaling with number of function calls
+    if mode == 10
+        tspan = [0, pi/6];
+        h = logspace(-5, 1, 100);
+        exp_euler_global_error = zeros(1, length(h));
+        exp_midpoint_global_error = zeros(1, length(h));
+        exp_midpoint_evals = zeros(1, length(h));
+        exp_euler_evals = zeros(1, length(h));
+
+        for i = 1:length(h)
+            [exp_euler_global_error(i), ~, exp_euler_temp] = forward_euler_global_error(tspan, h(1,i));
+            [exp_midpoint_global_error(i), ~, exp_midpoint_temp] = explicit_midpoint_global_error(tspan, h(1,i));
+            exp_midpoint_evals(i) = exp_midpoint_temp;
+            exp_euler_evals(i) = exp_euler_temp;
+        end
+
+        [p1,k1] = loglog_fit(exp_euler_evals,exp_euler_global_error);
+        [p2,k2] = loglog_fit(exp_midpoint_evals,exp_midpoint_global_error);
+
+        % plot the local truncation error
+        hold off
+        loglog(exp_euler_evals,exp_euler_global_error, 'r.', MarkerSize=10)
+        hold on
+        loglog(exp_midpoint_evals,exp_midpoint_global_error, 'g.', MarkerSize=10)
+        loglog(exp_euler_evals, k1*(exp_euler_evals.^p1), 'r-')
+        loglog(exp_midpoint_evals, k2*(exp_midpoint_evals.^p2), 'g-')
+        lgd = legend("forward euler", "explicit midpoint");
+        lgd.Location = "southeast";
+        xlabel("# of Rate Function Calls")
+        ylabel("Error")
+    end
+
+    if mode == 11
+        tspan = [0, pi/6];
+        h = logspace(-5, 1, 100);
+        exp_euler_global_error = zeros(1, length(h));
+        exp_midpoint_global_error = zeros(1, length(h));
+        imp_euler_global_error = zeros(1, length(h));
+        imp_midpoint_global_error = zeros(1, length(h));
+
+
+        exp_midpoint_evals = zeros(1, length(h));
+        exp_euler_evals = zeros(1, length(h));
+        imp_midpoint_evals = zeros(1, length(h));
+        imp_euler_evals = zeros(1, length(h));
+
+
+        for i = 1:length(h)
+            [exp_euler_global_error(i), ~, exp_euler_temp] = forward_euler_global_error(tspan, h(1,i));
+            [exp_midpoint_global_error(i), ~, exp_midpoint_temp] = explicit_midpoint_global_error(tspan, h(1,i));
+    
+            [imp_euler_global_error(i), ~, imp_euler_temp] = backward_euler_global_error(tspan, h(1,i));
+            [imp_midpoint_global_error(i), ~, imp_midpoint_temp] = implicit_midpoint_global_error(tspan, h(1,i));
+
+            exp_midpoint_evals(i) = exp_midpoint_temp;
+            exp_euler_evals(i) = exp_euler_temp;
+            imp_midpoint_evals(i) = imp_midpoint_temp;
+            imp_euler_evals(i) = imp_euler_temp;
+        end
+
+        [p1,k1] = loglog_fit(exp_euler_evals,exp_euler_global_error);
+        [p2,k2] = loglog_fit(exp_midpoint_evals,exp_midpoint_global_error);
+        [p3,k3] = loglog_fit(imp_euler_evals,imp_euler_global_error);
+        [p4,k4] = loglog_fit(imp_midpoint_evals,imp_midpoint_global_error);
+
+        % plot the local truncation error
+        hold off
+        loglog(exp_euler_evals,exp_euler_global_error, 'r.', MarkerSize=10)
+        hold on
+        loglog(exp_midpoint_evals,exp_midpoint_global_error, 'g.', MarkerSize=10)
+        loglog(imp_euler_evals,imp_euler_global_error, 'b.', MarkerSize=10)
+        loglog(imp_midpoint_evals,imp_midpoint_global_error, 'm.', MarkerSize=10)
+        %loglog(exp_euler_evals, k1*(exp_euler_evals.^p1), 'r-')
+        %loglog(exp_midpoint_evals, k2*(exp_midpoint_evals.^p2), 'g-')
+        lgd = legend("forward euler", "explicit midpoint", "backward euler", "implicit midpoint");
+        lgd.Location = "southeast";
+        xlabel("# of Rate Function Calls")
+        ylabel("Error")
+    end
 end
 
 
@@ -389,6 +469,14 @@ function [global_error, h_avg, num_evals] = implicit_midpoint_global_error(tspan
 
     global_error = norm(X_f - X_tf);
 end
+
+% function [global_error, h_avg, num_evals] = forward_euler_rate_func_err(tspan, h_ref)
+%     % calculate global error for the first test function
+%     [t_list,X_f,h_avg, num_evals] = forward_euler(@rate_func01,tspan,solution01(tspan(1)),h_ref);
+%     X_tf = solution01(t_list)';
+% 
+%     global_error = norm(X_f - X_tf);
+% end
 
 % test funcs_______________________________________________________________
 % test func 1
