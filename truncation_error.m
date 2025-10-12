@@ -316,7 +316,8 @@ function truncation_error(mode)
         lgd.Location = "southeast";
     end
 
-    % error scaling with number of function calls
+    % global error scaling with number of function calls for explicit
+    % methods
     if mode == 10
         tspan = [0, pi/6];
         h = logspace(-5, 1, 100);
@@ -335,7 +336,7 @@ function truncation_error(mode)
         [p1,k1] = loglog_fit(exp_euler_evals,exp_euler_global_error);
         [p2,k2] = loglog_fit(exp_midpoint_evals,exp_midpoint_global_error);
 
-        % plot the local truncation error
+        % plot the global truncation error
         hold off
         loglog(exp_euler_evals,exp_euler_global_error, 'r.', MarkerSize=10)
         hold on
@@ -348,6 +349,7 @@ function truncation_error(mode)
         ylabel("Error")
     end
 
+    % global error compared to number of function calls for all functions
     if mode == 11
         tspan = [0, pi/6];
         h = logspace(-5, 1, 100);
