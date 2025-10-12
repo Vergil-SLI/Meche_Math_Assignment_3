@@ -11,8 +11,8 @@ function truncation_error(mode)
         % plot the numerical solution
         hold off
         t_list = linspace(t_start, t_end, 20);
-        numerical_X_list = solution01(t_list);
-        plot(t_list, numerical_X_list, 'black')
+        analytical_X_list = solution01(t_list);
+        plot(t_list, analytical_X_list, 'black')
         hold on
 
         % plot the approximations (of various time step)
@@ -42,8 +42,8 @@ function truncation_error(mode)
         % plot the numerical solution
         hold off
         t_list = linspace(t_start, t_end, 20);
-        numerical_X_list = solution01(t_list);
-        plot(t_list, numerical_X_list, 'black')
+        analytical_X_list = solution01(t_list);
+        plot(t_list, analytical_X_list, 'black')
         hold on
 
         % plot the approximations (of various time step)
@@ -72,8 +72,8 @@ function truncation_error(mode)
         % plot the numerical solution
         hold off
         t_list = linspace(t_start, t_end, 20);
-        numerical_X_list = solution01(t_list);
-        plot(t_list, numerical_X_list, 'black')
+        analytical_X_list = solution01(t_list);
+        plot(t_list, analytical_X_list, 'black')
         hold on
 
         % plot the approximations (of various time step)
@@ -102,8 +102,8 @@ function truncation_error(mode)
         % plot the numerical solution
         hold off
         t_list = linspace(t_start, t_end, 20);
-        numerical_X_list = solution01(t_list);
-        plot(t_list, numerical_X_list, 'black')
+        analytical_X_list = solution01(t_list);
+        plot(t_list, analytical_X_list, 'black')
         hold on
 
         % plot the approximations (of various time step)
@@ -128,7 +128,7 @@ function truncation_error(mode)
         [~, explicit_midpoint_X_list, ~, ~] = explicit_midpoint(@rate_func01,[t_start, t_end],solution01(t_start), h);
         [~, backward_euler_X_list, ~, ~] = backward_euler(@rate_func01,[t_start, t_end],solution01(t_start), h);
         [~, implicit_midpoint_X_list, ~, ~] = implicit_midpoint(@rate_func01,[t_start, t_end],solution01(t_start), h);
-        numerical_X_list = solution01(t_list);
+        analytical_X_list = solution01(t_list);
 
         hold off
         plot(t_list, foward_euler_X_list, 'b-')
@@ -136,7 +136,7 @@ function truncation_error(mode)
         plot(t_list,explicit_midpoint_X_list, 'r-')
         plot(t_list,backward_euler_X_list, 'y-')
         plot(t_list,implicit_midpoint_X_list, 'm-')
-        plot(t_list, numerical_X_list, 'g-')
+        plot(t_list, analytical_X_list, 'g-')
 
         lgd = legend('forward euler', 'explicit midpoint', 'backwards euler', 'implicit midpoint', 'numerical solution');
         lgd.Location = "southeast";
@@ -395,6 +395,48 @@ function truncation_error(mode)
         xlabel("# of Rate Function Calls")
         ylabel("Error")
     end
+
+    if mode == 12
+        % stability visualization
+        % Comparing closed form approximation (of various time step) with numerical solutions
+        % Forward Euler Method
+        h = 0.45; % WHAT ARE GOOD H VALUES
+        tspan = [0, 20];
+
+        % calculate analytical values
+        t_analytical_list = linspace(tspan(1), tspan(2), 50);
+        analytical_X_list = solution01(t_analytical_list);
+
+        % plot the approximations (of various time step)
+        [~, foward_euler_X_list, ~, ~] = forward_euler(@rate_func01,[tspan(1), tspan(2)],solution01(tspan(1)), h);
+        [~, explicit_midpoint_X_list, ~, ~] = explicit_midpoint(@rate_func01,[tspan(1), tspan(2)],solution01(tspan(1)), h);
+        [~, backward_euler_X_list, ~, ~] = backward_euler(@rate_func01,[tspan(1), tspan(2)],solution01(tspan(1)), h);
+        [t_list, implicit_midpoint_X_list, ~, ~] = implicit_midpoint(@rate_func01,[tspan(1), tspan(2)],solution01(tspan(1)), h);
+        
+        plot(t_list, foward_euler_X_list, "-")
+        
+        figure;
+        subplot(2,2,1); % 2 row, 2 columns, select the first position
+        hold on
+        plot(t_analytical_list, analytical_X_list, 'black')
+        plot(t_list, foward_euler_X_list, "-")
+
+        
+        subplot(2,2,2); % 2 row, 2 columns, select the second position
+        hold on
+        plot(t_analytical_list, analytical_X_list, 'black')
+        plot(t_list, explicit_midpoint_X_list, "-")
+
+        subplot(2,2,3); % 2 row, 2 columns, select the first position
+        hold on
+        plot(t_analytical_list, analytical_X_list, 'black')
+        plot(t_list, backward_euler_X_list, "-")
+
+        subplot(2,2,4); % 2 row, 2 columns, select the second position
+        hold on
+        plot(t_analytical_list, analytical_X_list, 'black')
+        plot(t_list, implicit_midpoint_X_list, "-")
+    end
 end
 
 
@@ -469,14 +511,6 @@ function [global_error, h_avg, num_evals] = implicit_midpoint_global_error(tspan
 
     global_error = norm(X_f - X_tf);
 end
-
-% function [global_error, h_avg, num_evals] = forward_euler_rate_func_err(tspan, h_ref)
-%     % calculate global error for the first test function
-%     [t_list,X_f,h_avg, num_evals] = forward_euler(@rate_func01,tspan,solution01(tspan(1)),h_ref);
-%     X_tf = solution01(t_list)';
-% 
-%     global_error = norm(X_f - X_tf);
-% end
 
 % test funcs_______________________________________________________________
 % test func 1
