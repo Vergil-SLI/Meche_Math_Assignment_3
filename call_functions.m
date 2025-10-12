@@ -1,13 +1,11 @@
-%truncation_error(0)
-
-[t_list, x_list, h_avg, num_evals] = implicit_midpoint(@rate_func01, [0,(pi/4)], 1, 0.01)
-plot(t_list,x_list); hold on
-    plot(t_list, solution01(t_list))
-
-function dXdt = rate_func01(t,X)
-    dXdt = -5*X + 5*cos(t) - sin(t);
-end
-
-function X = solution01(t)
-    X = cos(t);
-end
+% modes:
+% 1 = comparing forward euler with closed form solution
+% 2 = comparing explicit midpoint with closed form solution
+% 3 = comparing implicit euler with closed form solution
+% 4 = comparing implicit midpoint with closed form solution
+% 5 = comparing the graphs of all solutions with h_ref of 0.38
+% 6 = loglog plot of local truncation error for explicit methods
+% 7 = loglog plot of local truncation error of all methods
+% 8 = loglog plot of global truncation error of explicit methods
+% 9 = loglog plot of global truncation error of all methods
+truncation_error(3)
