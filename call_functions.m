@@ -10,4 +10,5 @@
 % 9 = loglog plot of global truncation error of all methods
 % 10 = loglog plot of global error compared to number of function calls for explicit functions
 % 11 = loglogg plot of global error compared to number of function calls for all functions
-truncation_error(11)
+% 12 = stability visualization
+truncation_error(6)

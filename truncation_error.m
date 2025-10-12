@@ -25,7 +25,7 @@ function truncation_error(mode)
         lgd.Location = "southeast";
         xlabel("t")
         ylabel("X Value")
-
+        title("Comparing Forward Euler Approximation with Analytical Solution")
     end
 
     % _____________________________________________________________________
@@ -56,6 +56,7 @@ function truncation_error(mode)
         lgd.Location = "southeast";
         xlabel("t")
         ylabel("X Value")
+        title("Comparing Explicit Midpoint Approximation with Analytical Solution")
     end
 
     % _____________________________________________________________________
@@ -86,6 +87,7 @@ function truncation_error(mode)
         lgd.Location = "southeast";
         xlabel("t")
         ylabel("X Value")
+        title("Comparing Implicit (Backwards) Euler Approximation with Analytical Solution")
     end
 
     % _____________________________________________________________________
@@ -116,6 +118,7 @@ function truncation_error(mode)
         lgd.Location = "southeast";
         xlabel("t")
         ylabel("X Value")
+        title("Comparing Implicit Midpoint Approximation with Analytical Solution")
     end
 
     % _____________________________________________________________________
@@ -138,10 +141,11 @@ function truncation_error(mode)
         plot(t_list,implicit_midpoint_X_list, 'm-')
         plot(t_list, analytical_X_list, 'g-')
 
-        lgd = legend('forward euler', 'explicit midpoint', 'backwards euler', 'implicit midpoint', 'numerical solution');
+        lgd = legend('forward euler', 'explicit midpoint', 'backwards euler', 'implicit midpoint', 'analytical solution');
         lgd.Location = "southeast";
         xlabel("t")
         ylabel("X Value")
+        title("Comparison of all 4 approximation methods, href = 0.38")
     end
 
 
@@ -183,6 +187,7 @@ function truncation_error(mode)
             "k = " + k2 + ", p = " + p2,...
             "k = " + k3 + ", p = " + p3);
         lgd.Location = "southeast";
+        title("Local Truncation Error of Explicit Methods")
     end
     
     % local truncation of all 4 methods
@@ -231,6 +236,7 @@ function truncation_error(mode)
         ylabel("Error")
         lgd = legend("forward euler local error", "explicit midpoint local error", "backward euler local error", "implicit midpoint local error");
         lgd.Location = "southeast";
+        title("Local Truncation Error of All Methods")
     end
 
     % % _____________________________________________________________________
@@ -264,6 +270,7 @@ function truncation_error(mode)
         lgd.Location = "southeast";
         xlabel("Average timestep length h")
         ylabel("Error")
+        title("Global Truncation Error of Explicit Methods")
     end
 
     
@@ -314,6 +321,7 @@ function truncation_error(mode)
         ylabel("Error")
         lgd = legend("forward euler global error", "explicit midpoint global error", "backward euler global error", "implicit midpoint global error");
         lgd.Location = "southeast";
+        title("Global Truncation Error of All Methods")
     end
 
     % global error scaling with number of function calls for explicit
@@ -347,6 +355,7 @@ function truncation_error(mode)
         lgd.Location = "southeast";
         xlabel("# of Rate Function Calls")
         ylabel("Error")
+        title("Global Truncation Error given # of Function Calls for Explicit Methods")
     end
 
     % global error compared to number of function calls for all functions
@@ -396,6 +405,7 @@ function truncation_error(mode)
         lgd.Location = "southeast";
         xlabel("# of Rate Function Calls")
         ylabel("Error")
+        title("Global Truncation Error given # of Function Calls for all Methods")
     end
 
     if mode == 12
@@ -415,29 +425,41 @@ function truncation_error(mode)
         [~, backward_euler_X_list, ~, ~] = backward_euler(@rate_func01,[tspan(1), tspan(2)],solution01(tspan(1)), h);
         [t_list, implicit_midpoint_X_list, ~, ~] = implicit_midpoint(@rate_func01,[tspan(1), tspan(2)],solution01(tspan(1)), h);
         
-        plot(t_list, foward_euler_X_list, "-")
+        %plot(t_list, foward_euler_X_list, "-")
         
-        figure;
+        fig = figure;
         subplot(2,2,1); % 2 row, 2 columns, select the first position
         hold on
         plot(t_analytical_list, analytical_X_list, 'black')
         plot(t_list, foward_euler_X_list, "-")
+        title("Forward Euler")
 
         
         subplot(2,2,2); % 2 row, 2 columns, select the second position
         hold on
         plot(t_analytical_list, analytical_X_list, 'black')
         plot(t_list, explicit_midpoint_X_list, "-")
+        title("Explicit Midpoint")
 
         subplot(2,2,3); % 2 row, 2 columns, select the first position
         hold on
         plot(t_analytical_list, analytical_X_list, 'black')
         plot(t_list, backward_euler_X_list, "-")
+        title("Backward Euler")
 
         subplot(2,2,4); % 2 row, 2 columns, select the second position
         hold on
         plot(t_analytical_list, analytical_X_list, 'black')
         plot(t_list, implicit_midpoint_X_list, "-")
+        title("Implicit Midpoint")
+        
+        han=axes(fig,'visible','off'); 
+        han.Title.Visible='on';
+        han.XLabel.Visible='on';
+        han.YLabel.Visible='on';
+        ylabel(han,'X(t)');
+        xlabel(han,'t');
+        title(han,'Stability Visualizations');
     end
 end
 
